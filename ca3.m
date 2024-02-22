@@ -24,7 +24,8 @@
 x=double(imread('eight.tif'));
 % learn how to use imnoise function to add salt-and-pepper noise to an
 % image
-y = imnoise(x,'salt & pepper', 0.2);
+y = imnoise(uint8(x),'salt & pepper', 0.2);
+imshowpair(x,y,'montage');
 %y=<contaminate image x by salt-pepper noise with p=0.2>;
 % verify you have got the noisy image right
 % the answer should be around 0.8
@@ -36,6 +37,7 @@ x1= medfilt2(y);%<apply median filtering to noisy image y>;
 x2=medfilt2_nd(y);
 imshowpair(x1,x2,'montage');
 %<compare denoised images x1 and x2 side-by-side>
+%x2 looks clearer than x1
 
 % 2. additive white Gaussian noise (2 points)
 x=double(imread('rays.png'));
@@ -67,12 +69,12 @@ mean2((x-x1)==(x-x2));
 
 % 3 simulated periodic noise (1 point)
 load periodic_noise.mat
-[you are asked to write a new MATLAB function called notch_filter.m which
-implements the notch filtering (refer to PPT slide #57)]
-R=<you need to decide the radius of notch filter circular support>;
+%[you are asked to write a new MATLAB function called notch_filter.m which
+%implements the notch filtering (refer to PPT slide #57)]
+R=9;%<you need to decide the radius of notch filter circular support>;
 x3=notch_filter(y,R);
-<compare the damaged and denoised images y and x3 side-by-side>
-
+%<compare the damaged and denoised images y and x3 side-by-side>
+imshowpair(y,x3,'montage');
 
 % Part 2: Image filtering/transform experiments (5 points)
 
@@ -83,25 +85,26 @@ x1=double(imread('monroe.bmp'));
 % by call function conv2
 % specify a linear motion blurring kernel
 h = fspecial('motion',20,45);
-y1=<convolution of x and h>;
+y1=conv2(x1,h);%<convolution of x and h>;
 % verify you have got a motion-blurred image
 % along the diagonal direction (45-degree)
 imshow(y1,[]);
 % now let us see how to implement 2D convolution
 % by FFT method (for images, we use fft2)
 % for image, we do not need to specify dimension
-X1=<apply fft2 to image x>;
+X1=fft2(x);%<apply fft2 to image x>;
 % for kernel, you can specify the size of FT by
 % using FFT2(X,MROWS,NCOLS)
-H=<apply fft2 with size M-by-N to kernel h>;
-{Why do we need to specify the size of Fourier Transform
-    here?}
+H=fft2(h,M,N);%<apply fft2 with size M-by-N to kernel h>;
+%{Why do we need to specify the size of Fourier Transform
+%    here?}
+% Idk
 % spatial-domain convolution is equivalent to frequency-domain product
 Z1=X1.*H;
 z1=ifft2(Z1);
 % verify it does look like y (the result of direct-convolution)
 imshow(abs(z1),[]);
-
+% z1 does look like y
 
 % 2. 2D FFT vs. DCT (2 points)
 x2=double(imread('einstein.bmp'));
@@ -110,12 +113,12 @@ x2=double(imread('einstein.bmp'));
 % >help fftshift
 X2=fftshift(fft2(x2));
 imshow(abs(X2),[]);
-{where is the low-frequency region in X2?}
+%{where is the low-frequency region in X2?}
 % learn how to apply 2D discrete cosine transform to an image
 % > help dct2
 Y2=dct2(x2);
 imshow(Y2,[]);
-{where is the low-frequency region in Y2?}
+%{where is the low-frequency region in Y2?}
 % the following calculation verifies so-called Parseval's identify
 % which says the energy is preserved after FT or DCT
 sum(sum(x2.*x2))
@@ -126,14 +129,15 @@ sum(sum(Y2.*Y2))
 % This part attempts to create an einstein-monroe illusion
 % like what you have seen in intro.zip (marilyneinstein.jpg) by playing with
 % low-pass and high-pass filters.
-x1m=<apply a low-pass filter to x1>;
+x1m=x1;%<apply a low-pass filter to x1>;
 % Hint: all-pass=low-pass+high-pass
-x2m=<apply a high-pass filter to x2>;
+x2m=x2;%<apply a high-pass filter to x2>;
 x12=(x1m+x2m)/2;
 % Does it look like einstein at a close distance and monroe at a far
 % distance? If not, what could be the reasons? The bonus part of this CA
 % will supply a better tool for creating the desired illusion.
-<display the mixed image x12>
+imshow(x12);
+%<display the mixed image x12>
 
 % Bonus part: Einstein or Monroe? (1 point)
 x=imread('marilyneinstein.jpg');
@@ -144,4 +148,4 @@ imshow(x,[]);
 % Hint: roughly speaking, we want to separate spatially high-frequency from low-frequency
 % Please do not try too hard on this one because it is still an open research problem.
 % Demonstrating partial success is sufficient for meriting the bonus half-point.
-{create two images from x - one looks more like Einstein and the other more like Monroe}
+%{create two images from x - one looks more like Einstein and the other more like Monroe}
