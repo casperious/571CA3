@@ -127,7 +127,7 @@ imshow(abs(X2),[]);
 Y2=dct2(x2);
 imshow(log(abs(Y2)+1),[]);
 %{where is the low-frequency region in Y2?}
-%The low frequency region in Y2 is in the top left of the image.
+%The low frequency region in Y2 is in the top lef
 % the following calculation verifies so-called Parseval's identify
 % which says the energy is preserved after FT or DCT
 sum(sum(x2.*x2))
