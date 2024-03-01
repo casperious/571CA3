@@ -68,9 +68,12 @@ x2=tv(y,10);%<apply Total-Variation filtering to the noisy image y for n times: 
 % answers for MSE - uint8 tends to produce smaller but wrong MSE results.
 %<compare the MSE of images x1 and x2: i.e., ||x-x1|| and ||x-x2||>
 %mean2((x-x1)==(x-x2));
-mse = immse(x1, x2);
+mse1 = immse(x, x1);        
+mse2 = immse(x,x2);
+fprintf('MSE between x and x1: %f\n',mse1);
+fprintf('MSE between x and x2: %f\n',mse2);
 
-% 3 simulated periodic noise (1 point)
+% 3 simulated periodic noise (1 point)  
 load periodic_noise.mat
 %[you are asked to write a new MATLAB function called notch_filter.m which
 %implements the notch filtering (refer to PPT slide #57)]
@@ -138,14 +141,20 @@ sum(sum(Y2.*Y2))
 % This part attempts to create an einstein-monroe illusion
 % like what you have seen in intro.zip (marilyneinstein.jpg) by playing with
 % low-pass and high-pass filters.
-x1m=x1;%<apply a low-pass filter to x1>;
+sigma = 3;
+filter_size = 6*sigma+1;
+h = fspecial('gaussian',filter_size,sigma);
+x1m=imfilter(x1,h,'replicate');%<apply a low-pass filter to x1>;
+imshow(uint8(x1m));
 % Hint: all-pass=low-pass+high-pass
-x2m=x2;%<apply a high-pass filter to x2>;
+x2l = imfilter(x2,h,'replicate');
+x2m=x2-x2l;%imfilter(x2,h,'replicate');%<apply a high-pass filter to x2>;
 x12=(x1m+x2m)/2;
 % Does it look like einstein at a close distance and monroe at a far
 % distance? If not, what could be the reasons? The bonus part of this CA
 % will supply a better tool for creating the desired illusion.
-imshow(x12);
+%It does look like a blend of einstein and monroe.
+imshow(uint8(x12));
 %<display the mixed image x12>
 
 % Bonus part: Einstein or Monroe? (1 point)
